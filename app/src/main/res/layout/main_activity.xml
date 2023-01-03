@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:pikolo="http://schemas.android.com/apk/res-auto"
+    tools:context=".Main"
+    android:background="@drawable/grad_custom"
+    android:id="@+id/main_layout">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/settings"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:text="@string/void_text"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/setting"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bt_button"
+        android:layout_width="55dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/bluetooth_icon_off"
+        android:text="" />
+
+    <com.triggertrap.seekarc.SeekArc
+        android:id="@+id/bright"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:padding="100dp"
+        app:arcColor="@android:color/darker_gray"
+        app:arcWidth="1dp"
+        app:progressColor="@android:color/transparent"
+        app:rotation="300"
+        app:startAngle="0"
+        app:sweepAngle="120"
+        app:thumb="@drawable/bright_thumb_xml"
+        app:touchInside="true" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/ledsNum"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        app:bsb_auto_adjust_section_mark="true"
+        app:bsb_bubble_color="@color/yellow"
+        app:bsb_second_track_color="@color/yellow"
+        app:bsb_section_text_size="10sp"
+        app:bsb_show_section_mark="true"
+        app:bsb_show_section_text="true"
+        app:bsb_show_thumb_text="true"
+        app:bsb_thumb_text_color="@color/yellow"
+        app:bsb_thumb_text_size="18sp"
+        app:bsb_touch_to_seek="true"
+        app:bsb_track_color="@color/greyark"
+        android:layout_below="@id/settings"
+        android:layout_marginTop="120dp"
+        android:layout_centerHorizontal="true"/>
+
+    <com.madrapps.pikolo.HSLColorPicker
+        android:id="@+id/color_picker"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        pikolo:radius_offset="1dp"
+        pikolo:hue_indicator_stroke_width="0dp"
+        pikolo:saturation_indicator_stroke_width="0dp"
+        pikolo:lightness_indicator_stroke_width="0dp"
+        pikolo:hue_indicator_radius="15dp"
+        pikolo:saturation_indicator_radius="15dp"
+        pikolo:lightness_indicator_radius="15dp"
+        pikolo:arc_length="110"
+        pikolo:hue_start_angle="155"
+        pikolo:saturation_start_angle="275"
+        pikolo:lightness_start_angle="35" />
+
+    <ImageView
+        android:id="@+id/color_sample1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/color_sample" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/add2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.75"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="140dp"
+        android:background="@drawable/add_color"
+        android:text="@string/void_text" />
+
+    <ImageView
+        android:id="@+id/color_sample2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="140dp"
+        android:src="@drawable/color_sample"
+        android:visibility="invisible" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/add3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.75"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="210dp"
+        android:background="@drawable/add_color"
+        android:text=""
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/color_sample3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="210dp"
+        android:src="@drawable/color_sample"
+        android:visibility="invisible" />
+
+    <com.lukedeighton.wheelview.WheelView
+        android:id="@+id/wheelview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/ledsNum"
+        android:layout_marginTop="20dp"
+        app:emptyItemColor="@color/yellow"
+        app:repeatItems="true"
+        app:selectionAngle="90.0"
+        app:wheelDrawable="@drawable/vinyl_pharcyde"
+        app:wheelItemRadius="25dp"
+        app:wheelToItemDistance="125dp"
+        app:wheelRadius="150dp" />
+
+    <!--Padding here is used to see the animation properly-->
+    <com.nightonke.jellytogglebutton.JellyToggleButton
+        android:id="@+id/toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:padding="10dp"
+        android:layout_above="@+id/speed_view"
+        android:layout_marginBottom="10dp"
+        app:jtbJelly="active_tremble_body_slim_jim"
+        app:jtbLeftTextTypeface="fonts/Lato-Light.ttf"
+        app:jtbRightTextTypeface="fonts/Lato-Light.ttf"
+        app:jtbLeftTextColor="@color/color1"
+        app:jtbRightTextColor="@color/color2"
+        app:jtbLeftText="Default"
+        app:jtbRightText="Custom"
+        app:jtbLeftTextSize="15dp"
+        app:jtbRightTextSize="15dp"
+        app:jtbBackgroundRadius="0dp"
+        app:jtbLeftThumbColor="@color/color1_dark"
+        app:jtbRightThumbColor="@color/color2_dark" />
+
+<!--    <co.aenterhy.toggleswitch.ToggleSwitchButton-->
+<!--        android:id="@+id/joystick"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@+id/ledsNum"-->
+<!--        android:layout_marginTop="80dp"-->
+<!--        android:layout_marginStart="45dp"-->
+<!--        app:handleDrawable="@drawable/flag_num_thumb"-->
+<!--        app:upper="@drawable/simple_plus"-->
+<!--        app:bottom="@drawable/simple_minus"-->
+<!--        app:outerRadius="50dp" />-->
+
+<!--    <com.nightonke.boommenu.BoomMenuButton-->
+<!--        android:id="@+id/left_menu"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_marginTopPercent="75%"-->
+<!--        app:layout_marginStartPercent="5%"-->
+<!--        app:bmb_normalColor="@color/transparent"-->
+<!--        app:bmb_buttonEnum="textInsideCircle"-->
+<!--        app:bmb_piecePlaceEnum="piecePlace_dot_3_1"-->
+<!--        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_bottom"-->
+<!--        app:bmb_buttonPlaceEnum="buttonPlace_sc_3_1" />-->
+
+<!--    <com.nightonke.boommenu.BoomMenuButton-->
+<!--        android:id="@+id/right_menu"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_marginTopPercent="75%"-->
+<!--        app:layout_marginStartPercent="75%"-->
+<!--        app:bmb_normalColor="@color/transparent"-->
+<!--        app:bmb_buttonEnum="textInsideCircle"-->
+<!--        app:bmb_piecePlaceEnum="piecePlace_dot_3_1"-->
+<!--        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_bottom"-->
+<!--        app:bmb_buttonPlaceEnum="buttonPlace_sc_3_1" />-->
+
+    <com.github.anastr.speedviewlib.SpeedView
+        android:id="@+id/speed_view"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        app:sv_speedometerMode="TOP"
+        app:sv_indicator="NeedleIndicator"
+        app:sv_indicatorColor="@color/blue_sky"
+        app:sv_centerCircleRadius="0dp"
+        app:sv_marksNumber="30"
+        app:sv_tickNumber="23"
+        app:sv_markWidth="1dp"
+        app:sv_unit="Hz"
+        app:sv_textSize="0dp"
+        app:sv_unitTextColor="@color/transparent"
+        app:sv_speedTextColor="@color/transparent"
+        app:sv_textColor="@color/blue_sky" />
+
+    <com.triggertrap.seekarc.SeekArc
+        android:id="@+id/seekArc"
+        android:layout_width="200dp"
+        android:layout_height="170dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-85dp"
+        app:arcColor="@android:color/transparent"
+        app:arcWidth="10dp"
+        app:progressColor="@android:color/transparent"
+        app:rotation="270"
+        app:startAngle="0"
+        app:sweepAngle="180"
+        app:thumb="@android:color/transparent"
+        app:touchInside="true" />
+
+    <TextView
+        android:id="@+id/speed_val"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="23dp"
+        android:text="00 Hz"
+        android:textColor="@android:color/white"
+        android:textSize="23sp" />
+
+</RelativeLayout>

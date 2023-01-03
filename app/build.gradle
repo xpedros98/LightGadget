@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.example.lightgadget'
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.example.lightgadget"
+        minSdk 27
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    // Circle Menu
+    implementation 'com.ramotion.circlemenu:circle-menu:0.3.2'
+    // Lottie animations
+    implementation "com.airbnb.android:lottie:3.4.0"
+    // Speedometer
+    implementation 'com.github.anastr:speedviewlib:1.6.0'
+    // Straight seekbar
+    implementation "com.xw.repo:bubbleseekbar:3.20"
+    // Circular seekbar
+    implementation "com.github.Triggertrap:SeekArc:v1.1"
+    // Wheel view
+    implementation "com.github.lukedeighton:wheelview:0.4.2"
+    // Color picker
+    implementation 'com.github.madrapps:pikolo:2.0.2'
+    // 1-d joystick
+    implementation 'co.aenterhy:toggleswitch:1.0.0'
+    // Jelly switch
+    implementation 'com.nightonke:jellytogglebutton:1.0.2'
+    // Tools menu
+    implementation 'com.nightonke:boommenu:2.1.1'
+
+}

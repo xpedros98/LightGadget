@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">The Light Gadget App</string>
+    <string name="copy_r">© Creative Developments Hip Hop Nation 420™</string>
+    <string name="void_text"></string>
+
+    <array name="icons">
+        <item>@drawable/add_icon</item>
+        <item>@drawable/color_palette_icon</item>
+    </array>
+    <array name="colors">
+        <item>@color/yellow</item>
+        <item>@color/colorPrimaryDark</item>
+    </array>
+</resources>

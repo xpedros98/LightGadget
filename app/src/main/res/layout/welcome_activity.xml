@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/grad_sky"
+    android:orientation="vertical"
+    tools:context=".Welcome">
+
+    <ImageView
+        android:id="@+id/cloud_7"
+        android:layout_width="167dp"
+        android:layout_height="137dp"
+        android:layout_marginStart="43dp"
+        android:layout_marginTop="142dp"
+        android:src="@drawable/fake_cloud_3" />
+
+    <ImageView
+        android:id="@+id/cloud_8"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="390dp"
+        android:src="@drawable/fake_cloud_1" />
+
+    <ImageView
+        android:id="@+id/cloud_5"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="54dp"
+        android:layout_marginTop="105dp"
+        android:src="@drawable/fake_cloud_4" />
+
+    <ImageView
+        android:id="@+id/cloud_6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="288dp"
+        android:src="@drawable/fake_cloud_2" />
+
+    <ImageView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:scaleX="1.8"
+        android:scaleY="1.8"
+        android:src="@drawable/title"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/cloud_1"
+        android:layout_width="309dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:src="@drawable/fake_cloud_1" />
+
+    <ImageView
+        android:id="@+id/cloud_2"
+        android:layout_width="364dp"
+        android:layout_height="242dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="104dp"
+        android:src="@drawable/fake_cloud_2" />
+
+    <ImageView
+        android:id="@+id/cloud_3"
+        android:layout_width="291dp"
+        android:layout_height="184dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="230dp"
+        android:src="@drawable/fake_cloud_3" />
+
+    <ImageView
+        android:id="@+id/cloud_9"
+        android:layout_width="149dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="584dp"
+        android:src="@drawable/fake_cloud_4" />
+
+    <ImageView
+        android:id="@+id/cloud_4"
+        android:layout_width="347dp"
+        android:layout_height="253dp"
+        android:layout_marginStart="54dp"
+        android:layout_marginTop="454dp"
+        android:src="@drawable/fake_cloud_1" />
+
+</RelativeLayout>

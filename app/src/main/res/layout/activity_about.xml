@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".About"
+    android:background="@drawable/center_tricolor">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="69dp"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textColor="@color/greyark"
+        android:textSize="12sp"
+        android:typeface="sans"
+        android:text="About" />
+
+    <ImageView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/title" />
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_below="@id/title"
+        android:layout_marginTop="85dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Main author: Javier Pedrosa Alias\n\n
+        App original name: The Light Gadget App\n\n
+        Android gradle plugin version: 3.6.3\n\n
+        Gradle version: 5.6.4\n\n
+        Developing program: Android Studio\n\n
+        SDK API version: 33"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="10sp"
+        android:typeface="sans" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/kandinsnky"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/kandinsky"
+        android:visibility="visible"
+        android:alpha="0.3"
+
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/logo_1"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bose_white_logo" />
+
+        <ImageView
+            android:id="@+id/logo_2"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/as_logo" />
+
+        <ImageView
+            android:id="@+id/logo_3"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/arduinoandroid" />
+
+        <ImageView
+            android:id="@+id/logo_4"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/bose_white_logo" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textColor="@color/greyark"
+        android:textSize="12sp"
+        android:typeface="sans"
+        android:text="@string/copy_r"/>
+
+</RelativeLayout>

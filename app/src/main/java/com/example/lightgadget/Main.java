@@ -49,12 +49,12 @@ import kotlin.jvm.functions.Function2;
 import kotlin.jvm.functions.Function3;
 
 public class Main extends AppCompatActivity {
-    TextView speedValue;
-    RelativeLayout mainLayout;
-    Button settings, add2, add3;
-    BubbleSeekBar ledsNum;
-    SpeedView speedView;
-    SeekArc circularProgressBar, bright;
+    TextView speedTv;
+    RelativeLayout layout;
+    Button settings, add2, add3, btBtn;
+    BubbleSeekBar numBar;
+    SpeedView speedometer;
+    SeekArc speedArc, brightArc;
     WheelView wheelView;
     ImageView color_sample_1, color_sample_2, color_sample_3;
     HSLColorPicker colorPicker;
@@ -64,6 +64,8 @@ public class Main extends AppCompatActivity {
 
     Animation add_inAnimation, add_outAnimation, turn_outAnimation, turn_inAnimation, rotateAnimation;
 
+    public MyBTclass bt = new MyBTclass();
+
     // Variables related to the color picker.
     int colorId = 1;
     int color1 = Color.parseColor("#000000");
@@ -71,29 +73,41 @@ public class Main extends AppCompatActivity {
     int color3 = Color.parseColor("#000000");
     String[] customGroup = {"color_picker", "color_sample1", "add2", "color_sample2", "add3", "color_sample3"}; //, "joystick"};
     String[][] prohibited = {{"color_sample2", "add3", "color_sample3"}, {"add2", "color_sample3"}, {"add2", "add3"}};
+    
+    // Variables to adjust the background according the bright.
+    int R_day_end = 251;
+    int G_day_end = 251;
+    int B_day_end = 132;
+    int R_day_start = 128;
+    int G_day_start = 222;
+    int B_day_start = 234;
+    int R_night_end = 42;
+    int G_night_end = 53;
+    int B_night_end = 94;
+    int R_night_start = 3;
+    int G_night_start = 8;
+    int B_night_start = 30;
 
     // Variables related to the data frame.
     int palette = 0;
-    int brigth = 50;
+    int bright = 50;
     int num = 0;
     int max_num = 140;
     int rotation = 0;
     int flag_num = 1;
     float currSpeed = 0;
+    float maxSpeed = 100;
     String RGB1 = "0_0_0";
     String RGB2 = "0_0_0";
     String RGB3 = "0_0_0";
 
-
     private int[] items = {R.drawable.rand, R.drawable.rainbow, R.drawable.fire, R.drawable.water_wave, R.drawable.leaves, R.drawable.flamingo, R.drawable.police, R.drawable.color_ball, R.drawable.palm, R.drawable.sol};
-
-    Handler handler = new Handler();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
 
         // Request required permissions.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -107,7 +121,7 @@ public class Main extends AppCompatActivity {
         turn_inAnimation = AnimationUtils.loadAnimation(this, R.anim.turn_left_in);
         rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_360);
 
-        mainLayout = findViewById(R.id.main_layout);
+        layout = findViewById(R.id.main_layout);
 
         // Settings button.
         settings = findViewById(R.id.settings);
@@ -211,6 +225,18 @@ public class Main extends AppCompatActivity {
         });
 
         // Add buttons.
+        btBtn = findViewById(R.id.bt_button);
+        btBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bt.getConnection() != null) {
+                    Toast.makeText(getApplicationContext(), bt.getConnection().toString(), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "NULL", Toast.LENGTH_SHORT).show();
+                }
+        }});
+
         add2 = findViewById(R.id.add2);
         add2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,9 +266,9 @@ public class Main extends AppCompatActivity {
         });
 
         // Number LEDs seekbar.
-        ledsNum = findViewById(R.id.ledsNum);
+        numBar = findViewById(R.id.ledsNum);
 
-        ledsNum.getConfigBuilder()
+        numBar.getConfigBuilder()
                 .min(0)
                 .max(max_num)
                 .progress(1)
@@ -250,7 +276,7 @@ public class Main extends AppCompatActivity {
                 .sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
                 .build();
 
-        ledsNum.setOnTouchListener(new View.OnTouchListener() {
+        numBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return false;
@@ -258,30 +284,18 @@ public class Main extends AppCompatActivity {
         });
 
         // Circular progress bar for bright.
-        bright = findViewById(R.id.bright);
-        bright.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
+        brightArc = findViewById(R.id.bright);
+        int max_brightArc_val = brightArc.getSweepAngle();
+        brightArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int i, boolean b) {
-                int curr = bright.getProgress();
-                int R_day_end = 251;
-                int G_day_end = 251;
-                int B_day_end = 132;
-                int R_day_start = 128;
-                int G_day_start = 222;
-                int B_day_start = 234;
-                int R_night_end = 42;
-                int G_night_end = 53;
-                int B_night_end = 94;
-                int R_night_start = 3;
-                int G_night_start = 8;
-                int B_night_start = 30;
-
+                bt.write("Hola", getBaseContext());
                 GradientDrawable gd = new GradientDrawable(
                         GradientDrawable.Orientation.TL_BR,
-                        new int[] {Color.rgb(R_night_end + (R_day_end - R_night_end)*curr/bright.getSweepAngle(),G_night_end + (G_day_end - G_night_end)*curr/bright.getSweepAngle(),B_night_end + (B_day_end - B_night_end)*curr/bright.getSweepAngle()),
-                                Color.rgb(R_night_start + (R_day_start - R_night_start)*curr/bright.getSweepAngle(),G_night_start + (G_day_start - G_night_start)*curr/bright.getSweepAngle(),B_night_start + (B_day_start - B_night_start)*curr/bright.getSweepAngle())});
+                        new int[] {Color.rgb(R_night_end + (R_day_end - R_night_end)*i/max_brightArc_val,G_night_end + (G_day_end - G_night_end)*i/max_brightArc_val,B_night_end + (B_day_end - B_night_end)*i/max_brightArc_val),
+                                Color.rgb(R_night_start + (R_day_start - R_night_start)*i/max_brightArc_val,G_night_start + (G_day_start - G_night_start)*i/max_brightArc_val,B_night_start + (B_day_start - B_night_start)*i/max_brightArc_val)});
                 gd.setCornerRadius(0f);
-                mainLayout.setBackgroundDrawable(gd);
+                layout.setBackgroundDrawable(gd);
             }
 
             @Override
@@ -350,44 +364,44 @@ public class Main extends AppCompatActivity {
         });
 
         // Circular progress bar for speed.
-        circularProgressBar = findViewById(R.id.seekArc);
+        speedArc = findViewById(R.id.seekArc);
 
-        circularProgressBar.setOnTouchListener(new View.OnTouchListener() {
+        speedArc.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currSpeed = circularProgressBar.getProgress();
-                speedView.setSpeedAt(currSpeed);
+                currSpeed = speedArc.getProgress();
+                speedometer.setSpeedAt(currSpeed);
                 return false;
             }
         });
 
         // Speedometer view.
-        speedView = findViewById(R.id.speed_view);
-        speedView.makeSections(5, Color.CYAN, Style.BUTT);
-        List<Section> sections = speedView.getSections();
+        speedometer = findViewById(R.id.speed_view);
+        speedometer.makeSections(5, Color.CYAN, Style.BUTT);
+        List<Section> sections = speedometer.getSections();
         sections.get(0).setColor(Color.GREEN);
         sections.get(1).setColor(Color.BLUE);
         sections.get(2).setColor(Color.MAGENTA);
-        speedView.setSpeedAt(0);
-        speedView.setTextColor(sections.get(0).getColor());
-        speedView.setOnSectionChangeListener(new Function2<Section, Section, Unit>() {
+        speedometer.setSpeedAt(0);
+        speedometer.setTextColor(sections.get(0).getColor());
+        speedometer.setOnSectionChangeListener(new Function2<Section, Section, Unit>() {
             @Override
             public Unit invoke(Section section, Section section2) {
-                speedValue.setTextColor(section2.getColor());
+                speedTv.setTextColor(section2.getColor());
                 return null;
             }
         });
 
-        speedView.setOnSpeedChangeListener(new Function3<Gauge, Boolean, Boolean, Unit>() {
+        speedometer.setOnSpeedChangeListener(new Function3<Gauge, Boolean, Boolean, Unit>() {
             @Override
             public Unit invoke(Gauge gauge, Boolean aBoolean, Boolean aBoolean2) {
-                speedValue.setText(Float.toString(currSpeed)+" Hz");
+                speedTv.setText(Float.toString(currSpeed)+" Hz");
                 return null;
             }
         });
 
         // Text view.
-        speedValue = findViewById(R.id.speed_val);
+        speedTv = findViewById(R.id.speed_val);
 
 //        // Define the switch between custom colors and default palettes.
 //        joystick = findViewById(R.id.joystick);

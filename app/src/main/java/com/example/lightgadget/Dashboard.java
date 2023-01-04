@@ -123,7 +123,6 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 overridePendingTransition(R.anim.up_animation, R.anim.null_animation);
-                finish();
             }
         });
 
@@ -134,7 +133,6 @@ public class Dashboard extends AppCompatActivity {
     public void onBackPressed(){
         super.onBackPressed();
         overridePendingTransition(R.anim.null_animation, R.anim.up_animation);
-        finish();
     }
 
     // Function to refresh the paired devices.

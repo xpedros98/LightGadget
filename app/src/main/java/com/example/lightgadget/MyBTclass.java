@@ -119,16 +119,20 @@ public class MyBTclass extends AppCompatActivity {
     }
 
     // Function to connect the socket with several attempts if applicable.
-    public void socketConnect(BluetoothSocket bluetoothSocket) {
+    public void socketConnect(BluetoothSocket btSocket) {
         counter = 0;
         counter_10 += 10;
         do {
             try {
-                bluetoothSocket.connect();
+                btSocket.connect();
             }
             catch (IOException e) {}
             counter++;
-        } while (!bluetoothSocket.isConnected() && counter < 10);
+        } while (!btSocket.isConnected() && counter < 10);
+    }
+
+    public BluetoothSocket getConnection() {
+        return bluetoothSocket;
     }
 
     // Function to send data.

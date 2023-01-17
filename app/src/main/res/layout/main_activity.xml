@@ -9,6 +9,25 @@
     android:background="@drawable/grad_custom"
     android:id="@+id/main_layout">
 
+
+    <com.nightonke.boommenu.BoomMenuButton
+        android:id="@+id/stripes_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/settings"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        app:bmb_buttonEnum="textInsideCircle"
+        app:bmb_boomEnum="boomParabola_3"
+        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_tl"
+        app:bmb_buttonTopMargin="1dp"
+        app:bmb_buttonBottomMargin="1dp"
+        app:bmb_buttonLeftMargin="1dp"
+        app:bmb_buttonRightMargin="1dp"
+        android:visibility="invisible"
+        android:translationZ="1dp"/>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/settings"
         android:layout_width="50dp"
@@ -17,16 +36,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:background="@drawable/setting"/>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/bt_button"
-        android:layout_width="55dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="15dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/bluetooth_icon_off"
-        android:text="" />
 
     <com.triggertrap.seekarc.SeekArc
         android:id="@+id/bright"
@@ -180,30 +189,6 @@
 <!--        app:upper="@drawable/simple_plus"-->
 <!--        app:bottom="@drawable/simple_minus"-->
 <!--        app:outerRadius="50dp" />-->
-
-<!--    <com.nightonke.boommenu.BoomMenuButton-->
-<!--        android:id="@+id/left_menu"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_marginTopPercent="75%"-->
-<!--        app:layout_marginStartPercent="5%"-->
-<!--        app:bmb_normalColor="@color/transparent"-->
-<!--        app:bmb_buttonEnum="textInsideCircle"-->
-<!--        app:bmb_piecePlaceEnum="piecePlace_dot_3_1"-->
-<!--        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_bottom"-->
-<!--        app:bmb_buttonPlaceEnum="buttonPlace_sc_3_1" />-->
-
-<!--    <com.nightonke.boommenu.BoomMenuButton-->
-<!--        android:id="@+id/right_menu"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_marginTopPercent="75%"-->
-<!--        app:layout_marginStartPercent="75%"-->
-<!--        app:bmb_normalColor="@color/transparent"-->
-<!--        app:bmb_buttonEnum="textInsideCircle"-->
-<!--        app:bmb_piecePlaceEnum="piecePlace_dot_3_1"-->
-<!--        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_bottom"-->
-<!--        app:bmb_buttonPlaceEnum="buttonPlace_sc_3_1" />-->
 
     <com.github.anastr.speedviewlib.SpeedView
         android:id="@+id/speed_view"

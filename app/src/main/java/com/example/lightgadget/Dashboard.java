@@ -24,6 +24,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.nightonke.boommenu.BoomButtons.BoomButton;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,7 +37,7 @@ public class Dashboard extends AppCompatActivity {
     RelativeLayout relativeLayout;
     Button exitBtn, refreshBtn, sendBtn, eraseBtn;
     TextView feedback, lastTv;
-    com.google.android.material.textfield.TextInputEditText to_send;
+    com.google.android.material.textfield.TextInputEditText text2Send;
     ListView devicesList;
     int scrollAmount = 0;
 
@@ -63,7 +65,7 @@ public class Dashboard extends AppCompatActivity {
         sendBtn = findViewById(R.id.send);
         feedback = findViewById(R.id.feedback);
         feedback.setMovementMethod(new ScrollingMovementMethod());
-        to_send = findViewById(R.id.to_send);
+        text2Send = findViewById(R.id.to_send);
         devicesList = findViewById(R.id.devices_list);
 
         // Animations
@@ -75,17 +77,16 @@ public class Dashboard extends AppCompatActivity {
         String timestamp = simpleDateFormat.format(d);
         feedback.append(timestamp + "\n");
 
-
-
         // Create the bluetooth adapter if required.
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
+            logFeedback("ERROR: Bluetooth adapter is not available. This device may not support Bluetooth.");
             Toast.makeText(getBaseContext(), "ERROR: Bluetooth adapter is not available.", Toast.LENGTH_SHORT).show();
         } else {
             if (bluetoothAdapter.isEnabled()) { // Is turned ON.
-                Toast.makeText(getBaseContext(), "Bluetooth is already avilable.", Toast.LENGTH_SHORT).show();
-            } else { // Is turned OFF.
-                // Ask user to activate bluetooth.
+                logFeedback("Bluetooth is already avilable.");
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) { // Is turned OFF.
+                // Ask user to activate Bluetooth.
                 Intent intent_BT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(intent_BT, 1);
             }
@@ -95,8 +96,9 @@ public class Dashboard extends AppCompatActivity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getApplicationContext(), "Trying to send...", Toast.LENGTH_SHORT).show();
-                bt.write(Objects.requireNonNull(to_send.getText()).toString(), getApplicationContext());
+                //Toast.makeText(getBaseContext(), "Trying to send...", Toast.LENGTH_SHORT).show();
+                bt.write(Objects.requireNonNull(text2Send.getText()).toString(), getBaseContext());
+                logFeedback("Sent: " + Objects.requireNonNull(text2Send.getText()));
             }
         });
 
@@ -122,7 +124,7 @@ public class Dashboard extends AppCompatActivity {
         exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                overridePendingTransition(R.anim.up_animation, R.anim.null_animation);
+                goMain();
             }
         });
 
@@ -130,9 +132,15 @@ public class Dashboard extends AppCompatActivity {
     }
 
     // Back button callback.
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.null_animation, R.anim.up_animation);
+        goMain();
+    }
+    
+    private void goMain() {
+        Intent intent = new Intent(Dashboard.this, Main.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.down_animation, R.anim.up_animation);
     }
 
     // Function to refresh the paired devices.
@@ -175,20 +183,17 @@ public class Dashboard extends AppCompatActivity {
             String name = info.substring(0, info.length() - 17);
             String MAC = info.substring(info.length() - 17);
             logFeedback("Selected device: " + name);
-            btConnected = bt.newConnect(getApplicationContext(), bluetoothAdapter, MAC);
+            btConnected = bt.connect(getBaseContext(), bluetoothAdapter, MAC);
             if (btConnected) {
-                Toast.makeText(getApplicationContext(), "Connected to "+name, Toast.LENGTH_SHORT).show();
-                logFeedback("New connection managed successfully.");
-                bt.write("0", getApplicationContext());
-//                String answer = bt.read(getApplicationContext());
-//                while(answer == null) {
-//                    answer = bt.read(getApplicationContext());
-//                }
-//                Toast.makeText(getApplicationContext(), answer, Toast.LENGTH_SHORT).show();
+                logFeedback("Established connection to "+name);
+                bt.write("0", getBaseContext());
+                String answer = bt.read(getBaseContext());
+                logFeedback("Received: " + answer);
+                bt.parseStripes(answer);
             }
             else {
-                Toast.makeText(getApplicationContext(), "ERROR: not connected to"+name, Toast.LENGTH_SHORT).show();
-                logFeedback("ERROR: new connection not managed properly.");
+                logFeedback("ERROR: connecting BLuetooth.");
+                Toast.makeText(getBaseContext(), "ERROR: connecting BLuetooth.", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -200,14 +205,8 @@ public class Dashboard extends AppCompatActivity {
         try {
         scrollAmount = feedback.getLayout().getLineTop(feedback.getLineCount()) - feedback.getHeight();
         }
-        catch (Exception e) {}
+        catch (Exception ignored) {}
 
-        if (scrollAmount > 0) {
-            feedback.scrollTo(0, scrollAmount);
-        } else {
-            feedback.scrollTo(0, 0);
-        }
+        feedback.scrollTo(0, Math.max(scrollAmount, 0));
     }
-
-
 }

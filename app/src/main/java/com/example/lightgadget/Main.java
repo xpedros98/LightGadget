@@ -1,6 +1,7 @@
 package com.example.lightgadget;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,7 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -32,9 +33,14 @@ import com.lukedeighton.wheelview.WheelView;
 import com.lukedeighton.wheelview.adapter.WheelAdapter;
 import com.madrapps.pikolo.HSLColorPicker;
 import com.madrapps.pikolo.listeners.SimpleColorSelectionListener;
+import com.nightonke.boommenu.BoomButtons.ButtonPlaceEnum;
+import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
 import com.nightonke.boommenu.BoomButtons.SimpleCircleButton;
+import com.nightonke.boommenu.BoomButtons.TextInsideCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.ButtonEnum;
+import com.nightonke.boommenu.Piece.BoomPiece;
+import com.nightonke.boommenu.Piece.PiecePlaceEnum;
 import com.nightonke.jellytogglebutton.JellyToggleButton;
 import com.nightonke.jellytogglebutton.State;
 import com.triggertrap.seekarc.SeekArc;
@@ -42,6 +48,8 @@ import com.xw.repo.BubbleSeekBar;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import co.aenterhy.toggleswitch.ToggleSwitchButton;
 import kotlin.Unit;
@@ -51,204 +59,205 @@ import kotlin.jvm.functions.Function3;
 public class Main extends AppCompatActivity {
     TextView speedTv;
     RelativeLayout layout;
-    Button settings, add2, add3, btBtn;
+    Button settings, add2, add3;
     BubbleSeekBar numBar;
     SpeedView speedometer;
     SeekArc speedArc, brightArc;
     WheelView wheelView;
-    ImageView color_sample_1, color_sample_2, color_sample_3;
+    ImageView color1, color2, color3;
     HSLColorPicker colorPicker;
-    ToggleSwitchButton joystick;
     JellyToggleButton toggle;
-    BoomMenuButton leftMenu, rightMenu;
+    BoomMenuButton stripesMenu;
+    ToggleSwitchButton joystick;
 
-    Animation add_inAnimation, add_outAnimation, turn_outAnimation, turn_inAnimation, rotateAnimation;
+    Animation fadeIn, fadeOut, rotate;
 
     public MyBTclass bt = new MyBTclass();
 
     // Variables related to the color picker.
-    int colorId = 1;
-    int color1 = Color.parseColor("#000000");
-    int color2 = Color.parseColor("#000000");
-    int color3 = Color.parseColor("#000000");
-    String[] customGroup = {"color_picker", "color_sample1", "add2", "color_sample2", "add3", "color_sample3"}; //, "joystick"};
-    String[][] prohibited = {{"color_sample2", "add3", "color_sample3"}, {"add2", "color_sample3"}, {"add2", "add3"}};
+    int colorId;
+    String[] groupIds = {"color_picker", "color_sample1", "add2", "color_sample2", "add3", "color_sample3"}; //, "joystick"};
+    String[][] prohibitedIds = {{"color_sample2", "add3", "color_sample3"}, {"add2", "color_sample3"}, {"add2", "add3"}};
     
     // Variables to adjust the background according the bright.
-    int R_day_end = 251;
-    int G_day_end = 251;
-    int B_day_end = 132;
     int R_day_start = 128;
     int G_day_start = 222;
     int B_day_start = 234;
-    int R_night_end = 42;
-    int G_night_end = 53;
-    int B_night_end = 94;
+    int R_day_end = 251;
+    int G_day_end = 251;
+    int B_day_end = 132;
     int R_night_start = 3;
     int G_night_start = 8;
     int B_night_start = 30;
+    int R_night_end = 42;
+    int G_night_end = 53;
+    int B_night_end = 94;
 
     // Variables related to the data frame.
     int palette = 0;
     int bright = 50;
     int num = 0;
-    int max_num = 140;
+    int maxNum = 10;
     int rotation = 0;
-    int flag_num = 1;
-    float currSpeed = 0;
+    int flagNum = 1;
+    float speed = 0;
     float maxSpeed = 100;
-    String RGB1 = "0_0_0";
-    String RGB2 = "0_0_0";
-    String RGB3 = "0_0_0";
 
-    private int[] items = {R.drawable.rand, R.drawable.rainbow, R.drawable.fire, R.drawable.water_wave, R.drawable.leaves, R.drawable.flamingo, R.drawable.police, R.drawable.color_ball, R.drawable.palm, R.drawable.sol};
+    // Wheel view icons.
+    final int[] items = {R.drawable.rand, R.drawable.rainbow, R.drawable.fire, R.drawable.water_wave, R.drawable.leaves, R.drawable.flamingo, R.drawable.police, R.drawable.color_ball, R.drawable.palm, R.drawable.sol};
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
-
-        // Request required permissions.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 100);
-        }
+        layout = findViewById(R.id.main_layout);
 
         // Define the animations.
-        add_inAnimation = AnimationUtils.loadAnimation(this, R.anim.add_in);
-        add_outAnimation = AnimationUtils.loadAnimation(this, R.anim.add_out);
-        turn_outAnimation = AnimationUtils.loadAnimation(this, R.anim.turn_right_out);
-        turn_inAnimation = AnimationUtils.loadAnimation(this, R.anim.turn_left_in);
-        rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_360);
-
-        layout = findViewById(R.id.main_layout);
+        fadeIn = AnimationUtils.loadAnimation(this, R.anim.add_in);
+        fadeOut = AnimationUtils.loadAnimation(this, R.anim.add_out);
+        rotate = AnimationUtils.loadAnimation(this, R.anim.rotate_360);
 
         // Settings button.
         settings = findViewById(R.id.settings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                settings.startAnimation(rotateAnimation);
+                settings.startAnimation(rotate);
                 Intent intent = new Intent(Main.this, Dashboard.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.down_animation, R.anim.null_animation);
+                finish();
             }
         });
 
+        // Request required permissions.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 100);
+        }
+
+        // Check the state of the stripes (if BT is already connected) and create the stripes boom menu.
+        stripesMenu = findViewById(R.id.stripes_menu);
+        if (bt.getBTSocket() != null) {
+//            bt.write("1", getBaseContext());
+//            String answer = bt.read(getBaseContext());
+//            parseState(answer);
+
+            stripesMenu.setVisibility(View.VISIBLE);
+            String[] stripesName = bt.getNames();
+            stripesMenu.setPiecePlaceEnum(PiecePlaceEnum.getEnum(stripesName.length));
+            for (String s : stripesName) {
+                stripesMenu.addBuilder(new TextInsideCircleButton.Builder()
+                        .normalImageRes(R.drawable.stripe).normalText(s)
+                        .normalTextColor(R.color.blue)
+                        .normalColor(R.color.yellow)
+                                .piece(BoomPiece.)
+                        .listener(new OnBMClickListener() {
+                            @Override
+                            public void onBoomButtonClick(int index) {
+
+                            }
+                        }));
+            }
+        }
+
         // Color picker arcs.
         colorPicker = findViewById(R.id.color_picker);
-
         colorPicker.setColorSelectionListener(new SimpleColorSelectionListener() {
             @Override
             public void onColorSelected(int color) {
                 switch (colorId) {
                     case 1:
-                        color_sample_1.setColorFilter(color);
-                        color1 = color;
+                        color1.setColorFilter(color);
                         break;
                     case 2:
-                        color_sample_2.setColorFilter(color);
-                        color2 = color;
+                        color2.setColorFilter(color);
                         break;
                     case 3:
-                        color_sample_3.setColorFilter(color);
-                        color3 = color;
+                        color3.setColorFilter(color);
                         break;
                 }
             }
         });
 
-        colorPicker.setColor(color1);
-
-        // Color samples.
-        color_sample_1 = findViewById(R.id.color_sample1);
-        color_sample_1.setOnClickListener(new View.OnClickListener() {
+        // Initialize the color picker setup.
+        colorId = 1;
+        color1 = findViewById(R.id.color_sample1);
+        colorPicker.setColor(color1.getSolidColor());
+        color1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 colorId = 1;
-                colorPicker.setColor(color1);
+                colorPicker.setColor(color1.getSolidColor());
             }
         });
 
-        color_sample_2 = findViewById(R.id.color_sample2);
-        color_sample_2.setOnClickListener(new View.OnClickListener() {
+        color2 = findViewById(R.id.color_sample2);
+        color2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 colorId = 2;
-                colorPicker.setColor(color2);
+                colorPicker.setColor(color2.getSolidColor());
             }
         });
-        color_sample_2.setOnLongClickListener(new View.OnLongClickListener() {
+        color2.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 if (add3.getVisibility() == View.VISIBLE) {
-                    flag_num = 1;
-                    add3.startAnimation(add_outAnimation);
+                    flagNum = 1;
+                    add3.startAnimation(fadeOut);
                     add3.setVisibility(View.INVISIBLE);
-                    color_sample_2.startAnimation(add_outAnimation);
-                    color_sample_2.setVisibility(View.INVISIBLE);
-                    add2.startAnimation(add_inAnimation);
+                    color2.startAnimation(fadeOut);
+                    color2.setVisibility(View.INVISIBLE);
+                    add2.startAnimation(fadeIn);
                     add2.setVisibility(View.VISIBLE);
 
                     if (colorId == 2) {
                         colorId = 1;
-                        colorPicker.setColor(color1);
+                        colorPicker.setColor(color1.getSolidColor());
                     }
                 }
                 return false;
             }
         });
 
-        color_sample_3 = findViewById(R.id.color_sample3);
-        color_sample_3.setOnClickListener(new View.OnClickListener() {
+        color3 = findViewById(R.id.color_sample3);
+        color3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 colorId = 3;
-                colorPicker.setColor(color3);
+                colorPicker.setColor(color3.getSolidColor());
             }
         });
-        color_sample_3.setOnLongClickListener(new View.OnLongClickListener() {
+        color3.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                flag_num = 2;
-                color_sample_3.startAnimation(add_outAnimation);
-                color_sample_3.setVisibility(View.INVISIBLE);
-                add3.startAnimation(add_inAnimation);
+                flagNum = 2;
+                color3.startAnimation(fadeOut);
+                color3.setVisibility(View.INVISIBLE);
+                add3.startAnimation(fadeIn);
                 add3.setVisibility(View.VISIBLE);
 
                 if (colorId == 3) {
                     colorId = 2;
-                    colorPicker.setColor(color2);
+                    colorPicker.setColor(color2.getSolidColor());
                 }
                 return false;
             }
         });
 
-        // Add buttons.
-        btBtn = findViewById(R.id.bt_button);
-        btBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (bt.getConnection() != null) {
-                    Toast.makeText(getApplicationContext(), bt.getConnection().toString(), Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "NULL", Toast.LENGTH_SHORT).show();
-                }
-        }});
-
         add2 = findViewById(R.id.add2);
         add2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flag_num = 2;
+                flagNum = 2;
                 colorId = 2;
-                add2.startAnimation(add_outAnimation);
+                add2.startAnimation(fadeOut);
                 add2.setVisibility(View.INVISIBLE);
-                add3.startAnimation(add_inAnimation);
+                add3.startAnimation(fadeIn);
                 add3.setVisibility(View.VISIBLE);
-                color_sample_2.startAnimation(add_inAnimation);
-                color_sample_2.setVisibility(View.VISIBLE);
+                color2.startAnimation(fadeIn);
+                color2.setVisibility(View.VISIBLE);
             }
         });
 
@@ -256,23 +265,21 @@ public class Main extends AppCompatActivity {
         add3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flag_num = 3;
+                flagNum = 3;
                 colorId = 3;
-                add3.startAnimation(add_outAnimation);
+                add3.startAnimation(fadeOut);
                 add3.setVisibility(View.INVISIBLE);
-                color_sample_3.startAnimation(add_inAnimation);
-                color_sample_3.setVisibility(View.VISIBLE);
+                color3.startAnimation(fadeIn);
+                color3.setVisibility(View.VISIBLE);
             }
         });
 
-        // Number LEDs seekbar.
+        // Stripes num seekbar.
         numBar = findViewById(R.id.ledsNum);
-
         numBar.getConfigBuilder()
                 .min(0)
-                .max(max_num)
+                .max(maxNum)
                 .progress(1)
-                .sectionCount(20)
                 .sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
                 .build();
 
@@ -313,21 +320,21 @@ public class Main extends AppCompatActivity {
         toggle = findViewById(R.id.toggle);
 
         // Set the layout according the initial default configuration (left).
-        setGroupVisibility(customGroup, View.INVISIBLE);
+        setGroupVisibility(groupIds, View.INVISIBLE);
         toggle.setOnStateChangeListener(new JellyToggleButton.OnStateChangeListener() {
             @Override
             public void onStateChange(float process, State state, JellyToggleButton jtb) {
                 if (state == State.RIGHT_TO_LEFT) { // Default
-                    setGroupAnimation(customGroup, add_outAnimation);
-                    setGroupVisibility(customGroup, View.INVISIBLE);
-                    wheelView.startAnimation(add_inAnimation);
+                    setGroupAnimation(groupIds, fadeOut);
+                    setGroupVisibility(groupIds, View.INVISIBLE);
+                    wheelView.startAnimation(fadeIn);
                     wheelView.setVisibility(View.VISIBLE);
                 }
                 else if (state == State.LEFT_TO_RIGHT) { // Custom
-                    wheelView.startAnimation(add_outAnimation);
+                    wheelView.startAnimation(fadeOut);
                     wheelView.setVisibility(View.INVISIBLE);
-                    setGroupAnimation(customGroup, add_inAnimation);
-                    setGroupVisibility(customGroup, View.VISIBLE);
+                    setGroupAnimation(groupIds, fadeIn);
+                    setGroupVisibility(groupIds, View.VISIBLE);
                 }
             }
         });
@@ -365,12 +372,11 @@ public class Main extends AppCompatActivity {
 
         // Circular progress bar for speed.
         speedArc = findViewById(R.id.seekArc);
-
         speedArc.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                currSpeed = speedArc.getProgress();
-                speedometer.setSpeedAt(currSpeed);
+                speed = speedArc.getProgress();
+                speedometer.setSpeedAt(speed);
                 return false;
             }
         });
@@ -395,7 +401,7 @@ public class Main extends AppCompatActivity {
         speedometer.setOnSpeedChangeListener(new Function3<Gauge, Boolean, Boolean, Unit>() {
             @Override
             public Unit invoke(Gauge gauge, Boolean aBoolean, Boolean aBoolean2) {
-                speedTv.setText(Float.toString(currSpeed)+" Hz");
+                speedTv.setText(Float.toString(speed)+" Hz");
                 return null;
             }
         });
@@ -416,26 +422,7 @@ public class Main extends AppCompatActivity {
 //
 //            }
 //        });
-
-//        // Left splash menu.
-//        leftMenu = findViewById(R.id.left_menu);
-//
-//        leftMenu.setButtonEnum(ButtonEnum.SimpleCircle);
-//
-//        for (int i = 0; i < leftMenu.getButtonPlaceEnum().buttonNumber(); i++) {
-//            leftMenu.addBuilder(new SimpleCircleButton.Builder().normalImageRes(R.drawable.add_icon));
-//        }
-//
-//        // Right splash menu.
-//        rightMenu = findViewById(R.id.right_menu);
-//
-//        rightMenu.setButtonEnum(ButtonEnum.SimpleCircle);
-//
-//        for (int i = 0; i < rightMenu.getButtonPlaceEnum().buttonNumber(); i++) {
-//            rightMenu.addBuilder(new SimpleCircleButton.Builder().normalImageRes(R.drawable.add_icon));
-//        }
     }
-
 
     public static void RgbToHsl (int red, int green, int blue, float hsl[]) {
         float r = (float) red / 255;
@@ -480,18 +467,10 @@ public class Main extends AppCompatActivity {
         return hsl;
     }
 
-    private void setCurrColor(int id) {
-        switch (id) {
-            case 1: colorPicker.setColor(color1); break;
-            case 2: colorPicker.setColor(color2); break;
-            case 3: colorPicker.setColor(color3); break;
-        }
-    }
-
     private void setGroupAnimation(String[] group, Animation animation) {
         for (String id: group) {
             int Id = getResources().getIdentifier(id, "id", this.getPackageName());
-            if (!(group == customGroup & Arrays.asList(prohibited[flag_num - 1]).contains(id))) {
+            if (!(group == groupIds & Arrays.asList(prohibitedIds[flagNum - 1]).contains(id))) {
                 findViewById(Id).startAnimation(animation);
             }
         }
@@ -500,11 +479,21 @@ public class Main extends AppCompatActivity {
     private void setGroupVisibility(String[] group, int visibility) {
         for (String id: group) {
             int Id = getResources().getIdentifier(id, "id", this.getPackageName());
-            if (!(group == customGroup & Arrays.asList(prohibited[flag_num - 1]).contains(id))) {
+            if (!(group == groupIds & Arrays.asList(prohibitedIds[flagNum - 1]).contains(id))) {
                 findViewById(Id).setVisibility(visibility);
             }
         }
     }
 
-
+    private void parseState(String state) {
+        String[] stateSplit = state.split(";");
+        palette = 0;
+        bright = 50;
+        num = 0;
+        maxNum = 10;
+        rotation = 0;
+        flagNum = 1;
+        speed = 0;
+        maxSpeed = 100;
+    }
 }

@@ -1,71 +1,76 @@
 package com.example.lightgadget;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Message;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
-public class MyBTclass extends AppCompatActivity {
-    static final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+public class MyBTclass extends Thread {
+    static BluetoothSocket bluetoothSocket = null;
     static BluetoothServerSocket bluetoothServerSocket = null;
     static InputStream inputStream = null;
     static OutputStream outputStream = null;
-    static BluetoothSocket bluetoothSocket = null;
-    int counter; // Counter to check the attempts until being available to connect the socket.
-    int counter_10;  // Auxiliary counter to check the attempts until being available to connect the socket.
-    String defaultAdress = "94:B9:7E:E4:AB:8A";
-    String readMessage = null;
+    static final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    String readMessage = "default";
+    int maxCommandLength = 100;
+    static int[] stripesNum;
+    static String[] stripesName;
 
-    // Class method to connect the smartphone with the device.
-    public boolean connect(Context context, BluetoothAdapter bluetoothAdapter) {
-        // RETURN LEGEND: -2 bluetoothAdapter is null ; -1 = bluetoothAdapter is OFF ; 0 = bluetoothSocket not connected ; 1 = bluetoothSocket properly connected.
+    // Connect to a specific MAC adress.
+    public boolean connect(Context context, BluetoothAdapter bluetoothAdapter, String MAC) {
         // Check if bluetooth is available.
-        if (bluetoothAdapter == null) {
-            Toast.makeText(context, "This device do not support Bluetooth.", Toast.LENGTH_SHORT).show();
-            return false;
-        } else {
+        if (bluetoothAdapter != null && ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            if (bluetoothSocket != null) disconnect(context);
             if (bluetoothAdapter.isEnabled() && bluetoothSocket == null) { // BluetoothAdapter is ON.
-                Toast.makeText(context, "Connecting...", Toast.LENGTH_SHORT).show();
-
                 // Create a bluetooth device by its MAC adress.
-                BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(defaultAdress);
-                Toast.makeText(context, "Connecting to device: " + btDevice.getName(), Toast.LENGTH_SHORT).show();
+                BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(MAC);
 
                 // Create the socket.
                 try {
                     bluetoothSocket = btDevice.createRfcommSocketToServiceRecord(mUUID);
                 } catch (IOException e) {
-                    Toast.makeText(context, "ERROR: socket creation failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "ERROR: creating socket.", Toast.LENGTH_SHORT).show();
                 }
 
                 // Create the server socket.
                 try {
-                    bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("BLG", mUUID);
+                    bluetoothServerSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord("BTSS", mUUID);
                 } catch (IOException e) {
-                    Toast.makeText(context, "ERROR: server socket creation failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "ERROR: creating server socket.", Toast.LENGTH_SHORT).show();
                 }
 
                 // Connect the socket.
-                socketConnect(bluetoothSocket);
+                try {
+                    bluetoothSocket.connect();
+                } catch (IOException e) {
+                    Toast.makeText(context, "ERROR: connecting socket.", Toast.LENGTH_SHORT).show();
+                }
                 while (!bluetoothSocket.isConnected()) {
-                    Toast.makeText(context, "ERROR: socket connection failed. Attempts: " + counter_10, Toast.LENGTH_SHORT).show();
-                    socketConnect(bluetoothSocket);
+                    try {
+                        bluetoothSocket.connect();
+                    } catch (IOException e) {
+                        Toast.makeText(context, "ERROR: connecting socket.", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
+                // Get Streams to manage the communication.
                 if (bluetoothSocket.isConnected()) {
-                    String msg = "3/4. Socket connection established.";
-                    if (counter > 1) msg = msg + "Attempt: " + counter + "/" + counter_10;
-
-                    // Bluetooth communication need.
                     try {
                         inputStream = bluetoothSocket.getInputStream();
                         outputStream = bluetoothSocket.getOutputStream();
@@ -74,20 +79,23 @@ public class MyBTclass extends AppCompatActivity {
                     }
 
                     return true;
-                } else {
-                    Toast.makeText(context, "BluetoothSocket not connected properly.", Toast.LENGTH_SHORT).show();
-                    return false;
                 }
-            } else {
+                else {
+                    Toast.makeText(context, "Bluetooth socket not connected properly.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
                 Toast.makeText(context, "BluetoothAdapter is OFF.", Toast.LENGTH_SHORT).show();
-                return false;
             }
         }
+        else {
+            Toast.makeText(context, "This device do not support Bluetooth.", Toast.LENGTH_SHORT).show();
+        }
+        return false;
     }
 
+    // disconnect BT communication.
     public boolean disconnect(Context context) {
-        Toast.makeText(context, "Disconnecting...", Toast.LENGTH_SHORT).show();
-
         try {
             bluetoothSocket.close();
         } catch (IOException e) {
@@ -108,40 +116,13 @@ public class MyBTclass extends AppCompatActivity {
         return true;
     }
 
-    public boolean newConnect(Context context, BluetoothAdapter btAdapter, String MAC) {
-        defaultAdress = MAC;
-        if (bluetoothSocket == null) return connect(context, btAdapter);
-        else {
-            boolean disconnected = disconnect(context);
-            if (disconnected) return connect(context, btAdapter);
-            else return false;
-        }
-    }
-
-    // Function to connect the socket with several attempts if applicable.
-    public void socketConnect(BluetoothSocket btSocket) {
-        counter = 0;
-        counter_10 += 10;
-        do {
-            try {
-                btSocket.connect();
-            }
-            catch (IOException e) {}
-            counter++;
-        } while (!btSocket.isConnected() && counter < 10);
-    }
-
-    public BluetoothSocket getConnection() {
-        return bluetoothSocket;
-    }
-
-    // Function to send data.
+    // Send data by BT.
     public void write(String input, Context context) {
         if (bluetoothSocket != null) {
             if (bluetoothSocket.isConnected()) {
                 try {
+                    inputStream.skip(inputStream.available());  // Flush buffer to get a clean answer.
                     outputStream.write(input.getBytes());
-                    Toast.makeText(context, "Sent: " + input, Toast.LENGTH_SHORT).show();
                 }
                 catch (IOException e) {
                     Toast.makeText(context, "ERROR: sending: " + input, Toast.LENGTH_SHORT).show();
@@ -156,25 +137,25 @@ public class MyBTclass extends AppCompatActivity {
         }
     }
 
-    // Function to send data.
+    // Receive data by BT.
     public String read(Context context) {
-        readMessage = null;
+        readMessage = "default";
         if (bluetoothSocket != null) {
+            readMessage = "";
+            byte b;
+            char c;
             if (bluetoothSocket.isConnected()) {
-                byte[] buffer = new byte[256];  // buffer store for the stream
-                int bytes; // bytes returned from read()
-
-                // Keep listening to the InputStream until an exception occurs
-                while (true) {
+                for (int i=0; i < maxCommandLength; i++) {
                     try {
-                        // Read from the InputStream
-                        bytes = inputStream.read(buffer);
-                        readMessage = new String(buffer, 0, bytes);
-                    } catch (IOException e) {
-                        break;
+                        b = (byte) inputStream.read();
+                        c = (char) b;
+                        if (c == '$') break;
+                        else readMessage += c;
+                    }
+                    catch (IOException e) {
+                        Toast.makeText(context, "ERROR: reading input stream.", Toast.LENGTH_SHORT).show();
                     }
                 }
-                Toast.makeText(context, "Read: " + readMessage, Toast.LENGTH_SHORT).show();
             }
             else {
                 Toast.makeText(context, "ERROR: reading: socket is not connected.", Toast.LENGTH_SHORT).show();
@@ -184,6 +165,33 @@ public class MyBTclass extends AppCompatActivity {
             Toast.makeText(context, "ERROR: reading: socket is not defined.", Toast.LENGTH_SHORT).show();
         }
         return readMessage;
+    }
+
+    // Parse the received stripes info.
+    public void parseStripes(@NonNull String stripes) {
+        String[] stripesSplit = stripes.split(";");
+        stripesName = new String[stripesSplit.length-1];
+        stripesNum = new int[stripesSplit.length-1];
+        for (int i=0; i<stripesSplit.length-1; i++) {
+            String[] stripe = stripesSplit[i].split(":");
+            stripesName[i] = stripe[0];
+            stripesNum[i] = Integer.parseInt(stripe[1]);
+        }
+    }
+
+    // Returns the current BT socket.
+    public BluetoothSocket getBTSocket() {
+        return bluetoothSocket;
+    }
+
+    // Returns the current stripes names array.
+    public String[] getNames() {
+        return stripesName;
+    }
+    
+    // Returns the current stripes nums array.
+    public int[] getNums() {
+        return stripesNum;
     }
 }
 

@@ -12,17 +12,22 @@ import android.os.Bundle;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.github.anastr.speedviewlib.Gauge;
 import com.github.anastr.speedviewlib.ImageSpeedometer;
 import com.github.anastr.speedviewlib.SpeedView;
@@ -102,6 +107,7 @@ public class Main extends AppCompatActivity {
     int flagNum = 1;
     float speed = 0;
     float maxSpeed = 100;
+    Boolean[] targets;
 
     // Wheel view icons.
     final int[] items = {R.drawable.rand, R.drawable.rainbow, R.drawable.fire, R.drawable.water_wave, R.drawable.leaves, R.drawable.flamingo, R.drawable.police, R.drawable.color_ball, R.drawable.palm, R.drawable.sol};
@@ -136,30 +142,83 @@ public class Main extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 100);
         }
 
+//        // Check the state of the stripes (if BT is already connected) and create the stripes boom menu.
+//        stripesMenu = findViewById(R.id.stripes_menu);
+//        if (bt.getBTSocket() != null) {
+////            bt.write("1", getBaseContext());
+////            String answer = bt.read(getBaseContext());
+////            parseState(answer);
+//
+//            stripesMenu.setVisibility(View.VISIBLE);
+//            String[] stripesName = bt.getNames();
+//            stripesMenu.setPiecePlaceEnum(PiecePlaceEnum.DOT_2_1);
+//            stripesMenu.setButtonPlaceEnum(ButtonPlaceEnum.SC_2_1);
+//            int i = 0;
+//            targets = new Boolean[stripesName.length];
+//            for (String s : stripesName) {
+//                stripesMenu.addBuilder(new TextInsideCircleButton.Builder()
+//                        .normalText(s)
+//                );
+//            }
+//        }
+
         // Check the state of the stripes (if BT is already connected) and create the stripes boom menu.
-        stripesMenu = findViewById(R.id.stripes_menu);
-        if (bt.getBTSocket() != null) {
+        HorizontalScrollView sv = findViewById(R.id.scroll_bar);
+        // Create a LinearLayout element
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+//        if (bt.getBTSocket() != null) {
 //            bt.write("1", getBaseContext());
 //            String answer = bt.read(getBaseContext());
 //            parseState(answer);
+//        }
 
-            stripesMenu.setVisibility(View.VISIBLE);
-            String[] stripesName = bt.getNames();
-            stripesMenu.setPiecePlaceEnum(PiecePlaceEnum.getEnum(stripesName.length));
-            for (String s : stripesName) {
-                stripesMenu.addBuilder(new TextInsideCircleButton.Builder()
-                        .normalImageRes(R.drawable.stripe).normalText(s)
-                        .normalTextColor(R.color.blue)
-                        .normalColor(R.color.yellow)
-                                .piece(BoomPiece.)
-                        .listener(new OnBMClickListener() {
-                            @Override
-                            public void onBoomButtonClick(int index) {
+        // IT GOES INSIDE THE BET SOCKET CHECKING!
 
-                            }
-                        }));
-            }
+//            String[] stripesName = bt.getNames();
+        String[] stripesName = {"one","onetwo","one","onetwo","one","onetwo"};
+        int cnt = -1;
+        targets = new Boolean[stripesName.length];
+        for (String s : stripesName) {
+            LottieAnimationView lav = new LottieAnimationView(this);
+            lav.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            lav.setAnimation(R.raw.lottie_light_bulb);
+            lav.setId(++cnt);
+            lav.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int currId = v.getId();
+                    LottieAnimationView curr_lav = findViewById(currId);
+                    targets[currId] = !targets[currId];
+                    if (targets[currId]) {
+                        curr_lav.playAnimation();
+                    }
+                    else {
+                        curr_lav.pauseAnimation();
+                    }
+                }
+            });
+            targets[cnt] = false;
+            linearLayout.addView(lav);
+
+//            Button button = new Button(this);
+//            button.setText(Integer.toString(cnt++));
+//            button.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            linearLayout.addView(button);
+
+//            //set the properties for button
+//            Button btnTag = new Button(this);
+//            btnTag.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            btnTag.setText(s);
+//            btnTag.setBackground(getDrawable(R.drawable.stripe));
+//            btnTag.setId(i++);
+//            sv.addView(btnTag);
         }
+
+        // Add the LinearLayout element to the ScrollView
+        sv.addView(linearLayout);
+        linearLayout.setHorizontalScrollBarEnabled(true);
 
         // Color picker arcs.
         colorPicker = findViewById(R.id.color_picker);

@@ -9,24 +9,31 @@
     android:background="@drawable/grad_custom"
     android:id="@+id/main_layout">
 
+<!--    <com.nightonke.boommenu.BoomMenuButton-->
+<!--        android:id="@+id/stripes_menu"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="5dp"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_marginEnd="15dp"-->
+<!--        app:bmb_buttonEnum="textInsideCircle"-->
+<!--        app:bmb_boomEnum="boomParabola_3"-->
+<!--        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_br"-->
+<!--        app:bmb_buttonTopMargin="1dp"-->
+<!--        app:bmb_buttonBottomMargin="1dp"-->
+<!--        app:bmb_buttonLeftMargin="1dp"-->
+<!--        app:bmb_buttonRightMargin="1dp"-->
+<!--        android:visibility="invisible"-->
+<!--        android:translationZ="1dp" />-->
 
-    <com.nightonke.boommenu.BoomMenuButton
-        android:id="@+id/stripes_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/settings"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp"
-        app:bmb_buttonEnum="textInsideCircle"
-        app:bmb_boomEnum="boomParabola_3"
-        app:bmb_buttonPlaceAlignmentEnum="buttonPlaceAlignment_tl"
-        app:bmb_buttonTopMargin="1dp"
-        app:bmb_buttonBottomMargin="1dp"
-        app:bmb_buttonLeftMargin="1dp"
-        app:bmb_buttonRightMargin="1dp"
-        android:visibility="invisible"
-        android:translationZ="1dp"/>
+    <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_bar"
+        android:layout_width="200dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="90dp"
+        android:layout_marginEnd="20dp"
+        android:layout_height="50dp"
+        android:background="@drawable/rounded_bar" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/settings"
@@ -40,7 +47,8 @@
     <com.triggertrap.seekarc.SeekArc
         android:id="@+id/bright"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/settings"
         android:padding="100dp"
         app:arcColor="@android:color/darker_gray"
         app:arcWidth="1dp"
@@ -67,7 +75,7 @@
         app:bsb_touch_to_seek="true"
         app:bsb_track_color="@color/greyark"
         android:layout_below="@id/settings"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="140dp"
         android:layout_centerHorizontal="true"/>
 
     <com.madrapps.pikolo.HSLColorPicker

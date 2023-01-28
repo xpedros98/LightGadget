@@ -119,6 +119,10 @@ public class Main extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         layout = findViewById(R.id.main_layout);
 
+        // Compute the equivalent pixels for one dp.
+        final float scale = getBaseContext().getResources().getDisplayMetrics().density;
+        int dps = (int) (1 * scale + 0.5f);
+
         // Define the animations.
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.add_in);
         fadeOut = AnimationUtils.loadAnimation(this, R.anim.add_out);
@@ -167,6 +171,7 @@ public class Main extends AppCompatActivity {
         // Create a LinearLayout element
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setPadding(10*dps,0,10*dps,0);
 
 //        if (bt.getBTSocket() != null) {
 //            bt.write("1", getBaseContext());
@@ -182,7 +187,9 @@ public class Main extends AppCompatActivity {
         targets = new Boolean[stripesName.length];
         for (String s : stripesName) {
             LottieAnimationView lav = new LottieAnimationView(this);
-            lav.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+//            lav.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            lav.setLayoutParams(new RelativeLayout.LayoutParams(50*dps, ViewGroup.LayoutParams.WRAP_CONTENT));
+            lav.setPadding(5*dps,5*dps,5*dps,5*dps);
             lav.setAnimation(R.raw.lottie_light_bulb);
             lav.setId(++cnt);
             lav.setOnClickListener(new View.OnClickListener() {

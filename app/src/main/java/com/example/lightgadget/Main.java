@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +74,7 @@ public class Main extends AppCompatActivity {
     ImageView color1, color2, color3;
     HSLColorPicker colorPicker;
     JellyToggleButton toggle;
-    BoomMenuButton stripesMenu;
+    BoomMenuButton stripsMenu;
     ToggleSwitchButton joystick;
 
     Animation fadeIn, fadeOut, rotate;
@@ -108,6 +110,7 @@ public class Main extends AppCompatActivity {
     float speed = 0;
     float maxSpeed = 100;
     Boolean[] targets;
+    float minLottie = 0.45F;
 
     // Wheel view icons.
     final int[] items = {R.drawable.rand, R.drawable.rainbow, R.drawable.fire, R.drawable.water_wave, R.drawable.leaves, R.drawable.flamingo, R.drawable.police, R.drawable.color_ball, R.drawable.palm, R.drawable.sol};
@@ -146,86 +149,87 @@ public class Main extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 100);
         }
 
-//        // Check the state of the stripes (if BT is already connected) and create the stripes boom menu.
-//        stripesMenu = findViewById(R.id.stripes_menu);
+        String[] stripsName = {"one", "onetwo", "one", "onetwo", "one", "onetwo"};
+        if (true) {
+        // Check the state of the strips (if BT is already connected).
 //        if (bt.getBTSocket() != null) {
-////            bt.write("1", getBaseContext());
-////            String answer = bt.read(getBaseContext());
-////            parseState(answer);
-//
-//            stripesMenu.setVisibility(View.VISIBLE);
-//            String[] stripesName = bt.getNames();
-//            stripesMenu.setPiecePlaceEnum(PiecePlaceEnum.DOT_2_1);
-//            stripesMenu.setButtonPlaceEnum(ButtonPlaceEnum.SC_2_1);
-//            int i = 0;
-//            targets = new Boolean[stripesName.length];
-//            for (String s : stripesName) {
-//                stripesMenu.addBuilder(new TextInsideCircleButton.Builder()
-//                        .normalText(s)
-//                );
-//            }
-//        }
-
-        // Check the state of the stripes (if BT is already connected) and create the stripes boom menu.
-        HorizontalScrollView sv = findViewById(R.id.scroll_bar);
-        // Create a LinearLayout element
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setPadding(10*dps,0,10*dps,0);
-
-//        if (bt.getBTSocket() != null) {
-//            bt.write("1", getBaseContext());
+//            sendState("1");
 //            String answer = bt.read(getBaseContext());
 //            parseState(answer);
-//        }
+//            String[] stripsName = bt.getNames();
 
-        // IT GOES INSIDE THE BET SOCKET CHECKING!
+            if (stripsName.length > 0) {
+                // Create a strips selection bar.
+                HorizontalScrollView sv = findViewById(R.id.scroll_bar);
+                sv.setVisibility(View.VISIBLE);
 
-//            String[] stripesName = bt.getNames();
-        String[] stripesName = {"one","onetwo","one","onetwo","one","onetwo"};
-        int cnt = -1;
-        targets = new Boolean[stripesName.length];
-        for (String s : stripesName) {
-            LottieAnimationView lav = new LottieAnimationView(this);
-//            lav.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            lav.setLayoutParams(new RelativeLayout.LayoutParams(50*dps, ViewGroup.LayoutParams.WRAP_CONTENT));
-            lav.setPadding(5*dps,5*dps,5*dps,5*dps);
-            lav.setAnimation(R.raw.lottie_light_bulb);
-            lav.setId(++cnt);
-            lav.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int currId = v.getId();
-                    LottieAnimationView curr_lav = findViewById(currId);
-                    targets[currId] = !targets[currId];
-                    if (targets[currId]) {
-                        curr_lav.playAnimation();
-                    }
-                    else {
-                        curr_lav.pauseAnimation();
-                    }
+                // Create a LinearLayout element
+                LinearLayout linearLayout = new LinearLayout(this);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                linearLayout.setPadding(10 * dps, 0, 10 * dps, 0);
+                int cnt = -1;
+                int square_width = 40;
+                targets = new Boolean[stripsName.length];
+                for (String s : stripsName) {
+                    // Create a dedicated layout for each strip.
+                    LinearLayout strip_container = new LinearLayout(this);
+                    strip_container.setOrientation(LinearLayout.VERTICAL);
+
+                    // Add the lottie animation to the dedicated layout.
+                    LottieAnimationView lav = new LottieAnimationView(this);
+                    //            lav.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    lav.setLayoutParams(new RelativeLayout.LayoutParams(square_width * dps, square_width * dps));
+                    lav.setPadding(5 * dps, 2 * dps, 5 * dps, 0);
+                    lav.setProgress(minLottie);
+                    lav.setMinProgress(minLottie);
+                    lav.setAnimation(R.raw.lottie_light_bulb);
+                    lav.setId(++cnt);
+                    lav.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int currId = v.getId();
+                            LottieAnimationView curr_lav = findViewById(currId);
+                            targets[currId] = !targets[currId];
+                            if (targets[currId]) {
+                                curr_lav.playAnimation();
+                            } else {
+                                curr_lav.pauseAnimation();
+                                curr_lav.setProgress(minLottie);
+                            }
+                        }
+                    });
+                    lav.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            int currId = v.getId();
+                            LottieAnimationView curr_lav = findViewById(currId);
+                            targets[currId] = true;
+                            powerOff();
+                            curr_lav.pauseAnimation();
+                            curr_lav.setProgress(minLottie);
+                            return false;
+                        }
+                    });
+
+                    // Add a textview to the dedicated layout.
+                    TextView tv = new TextView(this);
+                    tv.setText(s);
+                    tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                    tv.setTextColor(getResources().getColor(R.color.lottie_yellow));
+                    tv.setGravity(Gravity.CENTER);
+
+                    // Initialize the references array and add the dedicated layout to the main one.
+                    targets[cnt] = false;
+                    strip_container.addView(lav);
+                    strip_container.addView(tv);
+                    linearLayout.addView(strip_container);
                 }
-            });
-            targets[cnt] = false;
-            linearLayout.addView(lav);
 
-//            Button button = new Button(this);
-//            button.setText(Integer.toString(cnt++));
-//            button.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//            linearLayout.addView(button);
-
-//            //set the properties for button
-//            Button btnTag = new Button(this);
-//            btnTag.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//            btnTag.setText(s);
-//            btnTag.setBackground(getDrawable(R.drawable.stripe));
-//            btnTag.setId(i++);
-//            sv.addView(btnTag);
+                // Add the LinearLayout element to the ScrollView
+                sv.addView(linearLayout);
+                linearLayout.setHorizontalScrollBarEnabled(true);
+            }
         }
-
-        // Add the LinearLayout element to the ScrollView
-        sv.addView(linearLayout);
-        linearLayout.setHorizontalScrollBarEnabled(true);
 
         // Color picker arcs.
         colorPicker = findViewById(R.id.color_picker);
@@ -340,7 +344,7 @@ public class Main extends AppCompatActivity {
             }
         });
 
-        // Stripes num seekbar.
+        // Strips num seekbar.
         numBar = findViewById(R.id.ledsNum);
         numBar.getConfigBuilder()
                 .min(0)
@@ -362,7 +366,6 @@ public class Main extends AppCompatActivity {
         brightArc.setOnSeekArcChangeListener(new SeekArc.OnSeekArcChangeListener() {
             @Override
             public void onProgressChanged(SeekArc seekArc, int i, boolean b) {
-                bt.write("Hola", getBaseContext());
                 GradientDrawable gd = new GradientDrawable(
                         GradientDrawable.Orientation.TL_BR,
                         new int[] {Color.rgb(R_night_end + (R_day_end - R_night_end)*i/max_brightArc_val,G_night_end + (G_day_end - G_night_end)*i/max_brightArc_val,B_night_end + (B_day_end - B_night_end)*i/max_brightArc_val),
@@ -561,5 +564,20 @@ public class Main extends AppCompatActivity {
         flagNum = 1;
         speed = 0;
         maxSpeed = 100;
+    }
+
+    private void sendState() {
+        for (int i = 0; i < targets.length; i++) {
+            if (targets[i]) {
+                bt.write(Integer.toString(i)+
+                        Integer.toString(palette)+
+                        Integer.toString(bright)+
+                        Integer.toString(num)+
+                        Integer.toString(rotation)+
+                        Integer.toString((int) speed)+
+                        Integer.toString(flagNum),
+                        getBaseContext());
+            }
+        }
     }
 }

@@ -17,6 +17,8 @@
     <color name="strawberry">#B3234C</color>
     <color name="orange">#FFA94D</color>
     <color name="greyark">#333333</color>
+    <color name="lottie_gray">#2F3235</color>
+    <color name="lottie_yellow">#FEB70D</color>
     <color name="blue">#03081E</color>
     <color name="blue2">#2A355E</color>
     <color name="blue_bt">#354CA0</color>
@@ -28,5 +30,5 @@
     <color name="color2">#9AA15C</color>
     <color name="color2_dark">#454736</color>
     <color name="purple">#7F00FF</color>
-    <color name="transparent">#007F00FF</color>
+    <color name="transparent">#00000000</color>
 </resources>

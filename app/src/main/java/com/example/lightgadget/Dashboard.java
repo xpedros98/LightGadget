@@ -189,7 +189,7 @@ public class Dashboard extends AppCompatActivity {
                 bt.write("0", getBaseContext());
                 String answer = bt.read(getBaseContext());
                 logFeedback("Received: " + answer);
-                bt.parseStripes(answer);
+                bt.parseStrips(answer);
             }
             else {
                 logFeedback("ERROR: connecting BLuetooth.");

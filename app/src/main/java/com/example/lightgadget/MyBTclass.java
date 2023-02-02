@@ -29,8 +29,8 @@ public class MyBTclass extends Thread {
     static final UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     String readMessage = "default";
     int maxCommandLength = 100;
-    static int[] stripesNum;
-    static String[] stripesName;
+    static int[] stripsNum;
+    static String[] stripsName;
 
     // Connect to a specific MAC adress.
     public boolean connect(Context context, BluetoothAdapter bluetoothAdapter, String MAC) {
@@ -167,15 +167,15 @@ public class MyBTclass extends Thread {
         return readMessage;
     }
 
-    // Parse the received stripes info.
-    public void parseStripes(@NonNull String stripes) {
-        String[] stripesSplit = stripes.split(";");
-        stripesName = new String[stripesSplit.length-1];
-        stripesNum = new int[stripesSplit.length-1];
-        for (int i=0; i<stripesSplit.length-1; i++) {
-            String[] stripe = stripesSplit[i].split(":");
-            stripesName[i] = stripe[0];
-            stripesNum[i] = Integer.parseInt(stripe[1]);
+    // Parse the received strips info.
+    public void parseStrips(@NonNull String strips) {
+        String[] stripsSplit = strips.split(";");
+        stripsName = new String[stripsSplit.length-1];
+        stripsNum = new int[stripsSplit.length-1];
+        for (int i=0; i<stripsSplit.length-1; i++) {
+            String[] strip = stripsSplit[i].split(":");
+            stripsName[i] = strip[0];
+            stripsNum[i] = Integer.parseInt(strip[1]);
         }
     }
 
@@ -184,14 +184,14 @@ public class MyBTclass extends Thread {
         return bluetoothSocket;
     }
 
-    // Returns the current stripes names array.
+    // Returns the current strips names array.
     public String[] getNames() {
-        return stripesName;
+        return stripsName;
     }
     
-    // Returns the current stripes nums array.
+    // Returns the current strips nums array.
     public int[] getNums() {
-        return stripesNum;
+        return stripsNum;
     }
 }
 
